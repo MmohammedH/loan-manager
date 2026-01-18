@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Application from '../models/Application';
+import AuditLog from '../models/AuditLog';
 
 // Get all pending applications
 export const getPendingApplications = async (req: Request, res: Response) => {
@@ -30,6 +31,14 @@ export const verifyOrRejectApplication = async (req: Request, res: Response) => 
     if (!application) {
       return res.status(404).json({ message: 'Application not found' });
     }
+
+    // Create Audit Log
+    await AuditLog.create({
+      action: `Application ${status}`,
+      performedBy: req.user.id, // Assuming middleware adds user to req
+      targetId: application._id,
+      details: `Verifier changed status to ${status}`,
+    });
 
     res.status(200).json({ message: `Application ${status}`, application });
   } catch (error) {

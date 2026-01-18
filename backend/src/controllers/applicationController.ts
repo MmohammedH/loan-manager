@@ -1,10 +1,23 @@
 import { Request, Response } from 'express';
 import Application from '../models/Application';
 
+const calculateRisk = (income: number, loan: number): string => {
+  if (income === 0) return 'Critical';
+  const ratio = loan / income;
+  if (ratio < 3) return 'Low';
+  if (ratio < 6) return 'Medium';
+  if (ratio < 10) return 'High';
+  return 'Critical';
+};
+
 export const submitApplication = async (req: Request, res: Response) => {
   try {
-    const { name, email, address, loanAmount } = req.body;
+    const { name, email, address, loanAmount, monthlyIncome } = req.body;
     const userId = req.user.id;
+
+    // Default to 0 if not provided to avoid NaN
+    const income = Number(monthlyIncome) || 0;
+    const riskRating = calculateRisk(income, Number(loanAmount));
 
     const application = await Application.create({
       userId,
@@ -12,6 +25,8 @@ export const submitApplication = async (req: Request, res: Response) => {
       email,
       address,
       loanAmount,
+      monthlyIncome: income,
+      riskRating,
     });
 
     res.status(201).json({ message: 'Application submitted', application });

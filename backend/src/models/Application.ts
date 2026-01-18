@@ -6,6 +6,12 @@ const applicationSchema = new Schema({
   email: String,
   address: String,
   loanAmount: Number,
+  monthlyIncome: Number,
+  riskRating: {
+    type: String,
+    enum: ['Low', 'Medium', 'High', 'Critical'],
+    default: 'Medium',
+  },
   status: {
     type: String,
     enum: ['pending', 'verified', 'rejected', 'approved'],

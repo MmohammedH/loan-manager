@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../models/User';
 import Application from '../models/Application';
+import AuditLog from '../models/AuditLog';
 
 // Get all loan applications
 export const getAllApplications = async (req: Request, res: Response) => {
@@ -28,6 +29,14 @@ export const promoteToVerifier = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
     const user = await User.findByIdAndUpdate(userId, { role: 'verifier' }, { new: true });
+
+    await AuditLog.create({
+      action: 'Promote User',
+      performedBy: req.user.id,
+      targetId: user?._id,
+      details: `User ${user?.email} promoted to verifier`,
+    });
+
     res.status(200).json({ message: 'User promoted to verifier', user });
   } catch (err) {
     res.status(500).json({ message: 'Error promoting user', error: err });
@@ -53,6 +62,15 @@ export const approveOrRejectApplication = async (req: Request, res: Response) =>
 
     application.status = status;
     await application.save();
+
+    await application.save();
+
+    await AuditLog.create({
+      action: `Application ${status}`,
+      performedBy: req.user.id,
+      targetId: application._id,
+      details: `Admin changed status to ${status}`,
+    });
 
     res.status(200).json({ message: `Application ${status}`, application });
   } catch (error) {

@@ -19,7 +19,17 @@ const VerifierPanel = () => {
       {applications.map(app => (
         <div key={app._id} className="border p-2 mb-2">
           <p>User: {app.userId?.email}</p>
-          <p>Amount: {app.loanAmount}</p>
+          <p>Amount: ${app.loanAmount}</p>
+          <p>Income: ${app.monthlyIncome}</p>
+          <p>
+            Risk:
+            <span className={`font-bold ml-1 ${app.riskRating === 'Critical' ? 'text-red-600' :
+                app.riskRating === 'High' ? 'text-orange-500' :
+                  app.riskRating === 'Medium' ? 'text-yellow-500' : 'text-green-500'
+              }`}>
+              {app.riskRating}
+            </span>
+          </p>
           <p>Status: {app.status}</p>
           <button onClick={() => updateStatus(app._id, 'verified')} className="bg-blue-500 text-white px-2 py-1 mr-2">Verify</button>
           <button onClick={() => updateStatus(app._id, 'rejected')} className="bg-red-500 text-white px-2 py-1">Reject</button>
