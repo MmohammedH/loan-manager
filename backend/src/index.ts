@@ -26,8 +26,13 @@ app.use('/api/verifier', verifierRoutes); // ✅ Add this line
 mongoose.connect(process.env.MONGO_URI || '')
   .then(() => {
     console.log('Connected to MongoDB');
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    // Only listen if not running in Vercel (serverless)
+    if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+      app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    }
   })
   .catch((error) => {
     console.error('MongoDB connection error:', error);
   });
+
+export default app;
