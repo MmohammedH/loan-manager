@@ -3,7 +3,8 @@
     "private": true,
     "scripts": {
         "install-frontend": "cd frontend && npm install",
-        "build": "cd frontend && npm run build"
+        "build": "cd frontend && npm run build",
+        "dev": "ts-node-dev --respawn --transpile-only backend/src/index.ts"
     },
     "dependencies": {
         "bcrypt": "^5.1.1",
